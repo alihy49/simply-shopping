@@ -1,0 +1,41 @@
+services:
+  app:
+    build: .
+    container_name: simply-shopping-app
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev
+    ports:
+      - "5000:3000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=example
+      - DB_NAME=simply_shopping
+    depends_on:
+      - db
+    networks:
+      - simply-shopping-network
+
+  db:
+    image: public.ecr.aws/docker/library/postgres:15
+    container_name: simply-shopping-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: simply_shopping
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - simply-shopping-network
+
+volumes:
+  db-data:
+
+networks:
+  simply-shopping-network:
+    external: true
