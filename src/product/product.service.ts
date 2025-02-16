@@ -13,7 +13,7 @@ export class ProductService {
   async createProduct(
     name: string,
     price: number,
-    description: string,
+    description?: string,
   ): Promise<Product> {
     const product = this.productRepository.create({ name, price, description });
     return this.productRepository.save(product);
