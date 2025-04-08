@@ -6,6 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductModule } from './product/product.module';
 import { Product } from './product/product.entity';
+import { UserModule } from './user/user.module';
+import { ShopModule } from './shop/shop.module';
 
 @Module({
   imports: [
@@ -22,7 +24,9 @@ import { Product } from './product/product.entity';
       entities: [Product],
       synchronize: true, // Be cautious with this in production
     }),
-    ProductModule, // Add the Product module once we create it
+    ProductModule,
+    UserModule,
+    ShopModule, // Add the Product module once we create it
   ],
   controllers: [AppController],
   providers: [
