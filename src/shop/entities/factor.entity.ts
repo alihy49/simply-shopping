@@ -5,7 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../../user/entities/user.entity'; // Assuming you already have User entity
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Factor {
@@ -18,7 +18,6 @@ export class Factor {
   @Column({ type: 'decimal' })
   total: number;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   @ManyToOne(() => User, (user) => user.factors, { eager: true })
   @JoinColumn({ name: 'user_id' })
   user: User;

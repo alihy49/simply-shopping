@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Factor } from '../../shop/entities/factor.entity'; // Import the Factor entity
+import { Factor } from '../../shop/entities/factor.entity';
 
 @Entity()
 export class User {

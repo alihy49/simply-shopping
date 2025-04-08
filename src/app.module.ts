@@ -2,17 +2,14 @@ import { APP_PIPE } from '@nestjs/core';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ProductModule } from './product/product.module';
-import { Product } from './product/product.entity';
+import { Product } from './shop/entities/product.entity';
 import { UserModule } from './user/user.module';
 import { ShopModule } from './shop/shop.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env', // This loads the environment variables
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -22,22 +19,20 @@ import { ShopModule } from './shop/shop.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [Product],
-      synchronize: true, // Be cautious with this in production
+      synchronize: true,
     }),
-    ProductModule,
     UserModule,
-    ShopModule, // Add the Product module once we create it
+    ShopModule,
   ],
-  controllers: [AppController],
   providers: [
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
+        transform: true,
       }),
     },
-    AppService,
   ],
 })
 export class AppModule {}
