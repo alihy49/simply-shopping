@@ -6,6 +6,7 @@ import { Product } from './shop/entities/product.entity';
 import { UserModule } from './user/user.module';
 import { ShopModule } from './shop/shop.module';
 import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/services/auth.service';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AuthModule } from './auth/auth.module';
         transform: true,
       }),
     },
+    AuthService,
   ],
 })
 export class AppModule {}
