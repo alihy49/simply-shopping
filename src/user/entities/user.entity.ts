@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import {
   IsEmail,
   IsNotEmpty,
@@ -7,6 +7,7 @@ import {
   IsString,
   IsOptional,
 } from 'class-validator';
+import { Factor } from 'src/shop/entities/factor.entity';
 
 export enum UserRole {
   CUSTOMER = 'customer',
@@ -44,4 +45,7 @@ export class User {
   @IsOptional()
   @IsString()
   phoneNumber?: string;
+
+  @OneToMany(() => Factor, (factor) => factor.user)
+  factors: Factor[];
 }

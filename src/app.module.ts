@@ -7,6 +7,8 @@ import { UserModule } from './user/user.module';
 import { ShopModule } from './shop/shop.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/services/auth.service';
+import { User } from './user/entities/user.entity';
+import { Factor } from './shop/entities/factor.entity';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { AuthService } from './auth/services/auth.service';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Product],
+      entities: [User, Product, Factor],
       synchronize: true,
     }),
     UserModule,
