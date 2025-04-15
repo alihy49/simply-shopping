@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Product } from './shop/entities/product.entity';
 import { UserModule } from './user/user.module';
 import { ShopModule } from './shop/shop.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ShopModule } from './shop/shop.module';
     }),
     UserModule,
     ShopModule,
+    AuthModule,
   ],
   providers: [
     {
