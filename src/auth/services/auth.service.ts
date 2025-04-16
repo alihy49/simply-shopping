@@ -1,17 +1,28 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserService } from '../../user/services/user.service';
-import { CreateUserDto } from '../../user/dto/create-user.dto';
+import { UserEmailVerificationService } from './user-email-verification.service';
+// import { User } from '../../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userEmailVerificationService: UserEmailVerificationService,
+  ) {}
 
-  async register(createUserDto: CreateUserDto) {
-    const existing = await this.userService.findByEmail(createUserDto.email);
-    if (existing) {
-      throw new UnauthorizedException('Email already in use');
+  async emailRegister(email: string): Promise<void> {
+    const user = await this.userService.findByEmail(email);
+
+    if (user) throw new ForbiddenException('User exist');
+    else {
+      const user = await this.userService.createUser(email);
+
+      await this.userEmailVerificationService.createUserEmailVerification(
+        user,
+        email,
+      );
     }
-
-    return this.userService.createUser(createUserDto);
   }
+
+  // async emailVerify(uid: string, pinCode: string): Promise<User> {}
 }
