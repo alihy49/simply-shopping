@@ -9,11 +9,7 @@ import { Factor } from './entities/factor.entity';
 import { User } from 'src/user/entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    TypeOrmModule.forFeature([Product]),
-    TypeOrmModule.forFeature([Factor]),
-  ],
+  imports: [TypeOrmModule.forFeature([User, Product, Factor])],
   providers: [ProductService, FactorService],
   controllers: [ProductController, FactorController],
   exports: [ProductService, FactorService],
