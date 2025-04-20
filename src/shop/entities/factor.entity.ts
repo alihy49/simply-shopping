@@ -18,7 +18,7 @@ export class Factor {
   @Column({ type: 'decimal' })
   total: number;
 
-  @ManyToOne(() => User, (user) => user.factors, { eager: true })
+  @ManyToOne(() => User, (user) => user.factors)
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

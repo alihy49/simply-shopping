@@ -13,7 +13,7 @@ export class UserEmailVerification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn()
   user: User;
 
