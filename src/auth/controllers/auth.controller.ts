@@ -6,8 +6,8 @@ import { EmailRegisterDto } from '../dto/email-register.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('email-register')
-  async emailRegister(@Body() { email }: EmailRegisterDto) {
-    return this.authService.emailRegister(email);
+  @Post('register-email')
+  registerWithEmailRouter(@Body() { email }: EmailRegisterDto) {
+    return this.authService.registerWithEmail(email);
   }
 }
