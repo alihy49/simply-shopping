@@ -10,7 +10,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=example
+      - DB_PASSWORD=123
       - DB_NAME=simply_shopping
     depends_on:
       - db
@@ -22,7 +22,7 @@ services:
     container_name: simply-shopping-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: 123
       POSTGRES_DB: simply_shopping
     volumes:
       - db-data:/var/lib/postgresql/data
