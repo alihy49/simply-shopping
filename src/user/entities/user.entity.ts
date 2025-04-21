@@ -20,7 +20,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'string', nullable: false, unique: true })
+  @Column({ type: 'varchar', length: 225, nullable: false, unique: true })
   @IsString()
   @IsNotEmpty()
   @IsEmail()
@@ -31,16 +31,21 @@ export class User {
   @IsBoolean()
   isVerified: boolean;
 
-  @Column({ type: 'string', nullable: true })
+  @Column({ type: 'varchar', length: 225, nullable: true })
   @IsString()
   @IsOptional()
   @MinLength(6)
   password: string;
 
-  @Column({ type: 'string', nullable: true })
+  @Column({ type: 'varchar', length: 50, nullable: true })
   @IsString()
   @IsOptional()
-  fullName: string;
+  firstName: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  @IsString()
+  @IsOptional()
+  lastName: string;
 
   @Column({
     type: 'enum',
@@ -52,7 +57,7 @@ export class User {
   @IsOptional()
   role: UserRole;
 
-  @Column({ type: 'string', nullable: true })
+  @Column({ type: 'varchar', length: 16, nullable: true })
   @IsString()
   @IsOptional()
   phoneNumber?: string;
