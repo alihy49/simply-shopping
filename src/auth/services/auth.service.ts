@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto';
@@ -6,6 +6,7 @@ import * as crypto from 'crypto';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from '../../user/services/user.service';
 import { UserEmailVerification } from '../entities/user-email-verification.entity';
+import { Exception } from 'src/common/exception';
 
 @Injectable()
 export class AuthService {
@@ -17,26 +18,56 @@ export class AuthService {
 
   async registerWithEmail(email: string): Promise<void> {
     const user = await this.userService.findByEmail(email);
-    if (user) throw new ForbiddenException('User exist');
-    else {
-      const user = await this.userService.createUser(email);
-      await this.createUserEmailVerification(user, email);
+
+    if (user?.isVerified) {
+      throw Exception.Forbidden('User already verified');
     }
+
+    const newUser = user || (await this.userService.createUser(email));
+
+    await this.sendEmail(newUser, email);
   }
 
-  // async emailVerify(uid: string, pinCode: string): Promise<User> {}
+  async sendEmail(user: User, email: string): Promise<string> {
+    const activeVerification = await this.userEmailVerificationRepository
+      .createQueryBuilder('verification')
+      .leftJoinAndSelect('verification.user', 'user')
+      .where('user.id = :userId', { userId: user.id })
+      .andWhere('verification.nextRequestTime > :now', { now: new Date() })
+      .andWhere('verification.isUsed = :isUsed', { isUsed: false })
+      .getOne();
+
+    if (activeVerification) {
+      const now = new Date();
+      const diffBetweenTimes =
+        activeVerification.nextRequestTime.getTime() - now.getTime();
+
+      const totalSeconds = Math.floor(diffBetweenTimes / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+
+      // Format to MM:SS
+      const formattedDiffTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+      throw Exception.TooManyRequests(
+        `Please wait ${formattedDiffTime} before requesting again`,
+      );
+    }
+
+    const userEmailVerification = await this.createUserEmailVerification(user);
+
+    // TODO: sendEmail(email, pinCode)
+    console.log('============>', email);
+
+    return userEmailVerification.uid;
+  }
 
   async createUserEmailVerification(
     user: User,
-    email: string,
   ): Promise<UserEmailVerification> {
     const uid = crypto.randomBytes(16).toString('hex');
     const pinCode = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresIn = new Date(Date.now() + 10 * 60 * 1000);
-
-    console.log('============>', email);
-
-    // TODO: send pinCode to email
 
     const userEmailVerification = this.userEmailVerificationRepository.create({
       user,
@@ -47,23 +78,4 @@ export class AuthService {
 
     return this.userEmailVerificationRepository.save(userEmailVerification);
   }
-
-  // async verifyPinCode(email: string, pinCode: string): Promise<boolean> {
-  //   const verification = await this.verificationRepository
-  //     .createQueryBuilder('verification')
-  //     .leftJoin('verification.user', 'user')
-  //     .where('user.email = :email', { email })
-  //     .andWhere('verification.pinCode = :pinCode', { pinCode })
-  //     .getOne();
-
-  //   if (!verification || verification.expiresIn < new Date()) {
-  //     return false; // Verification expired or invalid code
-  //   }
-
-  //   // Mark verification as used
-  //   verification.isUsed = true;
-  //   await this.verificationRepository.save(verification);
-
-  //   return true;
-  // }
 }
