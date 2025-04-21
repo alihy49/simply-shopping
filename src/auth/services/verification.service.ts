@@ -19,13 +19,16 @@ export class VerificationService {
   ): Promise<UserEmailVerification> {
     const uid = crypto.randomBytes(16).toString('hex');
     const pinCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresIn = new Date(Date.now() + 10 * 60 * 1000);
+    const now = new Date();
+    const expiresIn = new Date(now.getTime() + 10 * 60 * 1000);
+    const nextRequestTime = new Date(now.getTime() + 60 * 1000);
 
     const userEmailVerification = this.userEmailVerificationRepository.create({
       user,
       uid,
       pinCode,
       expiresIn,
+      nextRequestTime,
     });
 
     return this.userEmailVerificationRepository.save(userEmailVerification);
