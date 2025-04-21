@@ -13,27 +13,6 @@ export class VerificationService {
     private readonly userEmailVerificationRepository: Repository<UserEmailVerification>,
   ) {}
 
-  // Handle email verification creation
-  async createUserEmailVerification(
-    user: User,
-  ): Promise<UserEmailVerification> {
-    const uid = crypto.randomBytes(16).toString('hex');
-    const pinCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const now = new Date();
-    const expiresIn = new Date(now.getTime() + 10 * 60 * 1000);
-    const nextRequestTime = new Date(now.getTime() + 60 * 1000);
-
-    const userEmailVerification = this.userEmailVerificationRepository.create({
-      user,
-      uid,
-      pinCode,
-      expiresIn,
-      nextRequestTime,
-    });
-
-    return this.userEmailVerificationRepository.save(userEmailVerification);
-  }
-
   // Handle getting active email verification
   async getActiveUserEmailVerification(
     user: User,
@@ -45,6 +24,27 @@ export class VerificationService {
       .andWhere('verification.nextRequestTime > :now', { now: new Date() })
       .andWhere('verification.isUsed = :isUsed', { isUsed: false })
       .getOne();
+  }
+
+  // Handle email verification creation
+  async createUserEmailVerification(
+    user: User,
+  ): Promise<UserEmailVerification> {
+    const uid = crypto.randomBytes(16).toString('hex');
+    const pinCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const now = new Date();
+    const expiresIn = new Date(now.getTime() + 10 * 60 * 1000);
+    const nextRequestTime = new Date(now.getTime() + 2 * 60 * 1000);
+
+    const userEmailVerification = this.userEmailVerificationRepository.create({
+      user,
+      uid,
+      pinCode,
+      expiresIn,
+      nextRequestTime,
+    });
+
+    return this.userEmailVerificationRepository.save(userEmailVerification);
   }
 
   // Handle time difference for verification (MM:SS)
