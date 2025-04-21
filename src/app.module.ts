@@ -2,9 +2,10 @@ import { APP_PIPE } from '@nestjs/core';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+
 import { UserModule } from './user/user.module';
-import { ShopModule } from './shop/shop.module';
 import { AuthModule } from './auth/auth.module';
+import { ShopModule } from './shop/shop.module';
 
 @Module({
   imports: [
