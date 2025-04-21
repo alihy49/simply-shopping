@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsString,
   IsOptional,
+  IsBoolean,
 } from 'class-validator';
 import { Factor } from 'src/shop/entities/factor.entity';
 
@@ -19,31 +20,41 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column({ type: 'string', nullable: false, unique: true })
+  @IsString()
+  @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @Column()
-  @IsNotEmpty()
+  @Column({ type: 'boolean', nullable: true, default: false })
+  @IsOptional()
+  @IsBoolean()
+  isVerified: boolean;
+
+  @Column({ type: 'string', nullable: true })
+  @IsString()
+  @IsOptional()
   @MinLength(6)
   password: string;
 
-  @Column()
-  @IsNotEmpty()
+  @Column({ type: 'string', nullable: true })
   @IsString()
+  @IsOptional()
   fullName: string;
 
   @Column({
     type: 'enum',
+    nullable: true,
     enum: UserRole,
     default: UserRole.CUSTOMER,
   })
   @IsEnum(UserRole)
+  @IsOptional()
   role: UserRole;
 
-  @Column({ nullable: true })
-  @IsOptional()
+  @Column({ type: 'string', nullable: true })
   @IsString()
+  @IsOptional()
   phoneNumber?: string;
 
   @OneToMany(() => Factor, (factor) => factor.user)
