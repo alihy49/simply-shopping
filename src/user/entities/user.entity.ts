@@ -26,6 +26,11 @@ export class User {
   @IsEmail()
   email: string;
 
+  @Column({ type: 'varchar', length: 16, nullable: true })
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
+
   @Column({ type: 'boolean', nullable: true, default: false })
   @IsOptional()
   @IsBoolean()
@@ -56,11 +61,6 @@ export class User {
   @IsEnum(UserRole)
   @IsOptional()
   role: UserRole;
-
-  @Column({ type: 'varchar', length: 16, nullable: true })
-  @IsString()
-  @IsOptional()
-  phoneNumber?: string;
 
   @OneToMany(() => Factor, (factor) => factor.user)
   factors: Factor[];
