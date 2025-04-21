@@ -29,25 +29,12 @@ export class AuthService {
   }
 
   async sendEmail(user: User, email: string): Promise<string> {
-    const activeVerification = await this.userEmailVerificationRepository
-      .createQueryBuilder('verification')
-      .leftJoinAndSelect('verification.user', 'user')
-      .where('user.id = :userId', { userId: user.id })
-      .andWhere('verification.nextRequestTime > :now', { now: new Date() })
-      .andWhere('verification.isUsed = :isUsed', { isUsed: false })
-      .getOne();
+    const activeVerification = await this.getActiveUserEmailVerification(user);
 
     if (activeVerification) {
-      const now = new Date();
-      const diffBetweenTimes =
-        activeVerification.nextRequestTime.getTime() - now.getTime();
-
-      const totalSeconds = Math.floor(diffBetweenTimes / 1000);
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = totalSeconds % 60;
-
-      // Format to MM:SS
-      const formattedDiffTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      const formattedDiffTime = this.calculateTimeDifference(
+        activeVerification.nextRequestTime,
+      );
 
       throw Exception.TooManyRequests(
         `Please wait ${formattedDiffTime} before requesting again`,
@@ -60,6 +47,35 @@ export class AuthService {
     console.log('============>', email);
 
     return userEmailVerification.uid;
+  }
+
+  async getActiveUserEmailVerification(
+    user: User,
+  ): Promise<UserEmailVerification | undefined> {
+    return this.userEmailVerificationRepository
+      .createQueryBuilder('verification')
+      .leftJoinAndSelect('verification.user', 'user')
+      .where('user.id = :userId', { userId: user.id })
+      .andWhere('verification.nextRequestTime > :now', { now: new Date() })
+      .andWhere('verification.isUsed = :isUsed', { isUsed: false })
+      .getOne();
+  }
+
+  private calculateTimeDifference(nextRequestTime: Date): string {
+    const now = new Date();
+    const diffBetweenTimes = nextRequestTime.getTime() - now.getTime();
+
+    // If the time difference is negative, return "00:00"
+    if (diffBetweenTimes < 0) {
+      return '00:00';
+    }
+
+    const totalSeconds = Math.floor(diffBetweenTimes / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    // Format to MM:SS
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
   async createUserEmailVerification(
