@@ -43,12 +43,13 @@ export class AuthService {
 
     const userEmailVerification = await this.createUserEmailVerification(user);
 
-    // TODO: sendEmail(email, pinCode)
+    // TODO: Implement actual email sending logic (use a mail service)
     console.log('============>', email);
 
     return userEmailVerification.uid;
   }
 
+  // Get the active email verification for a user
   async getActiveUserEmailVerification(
     user: User,
   ): Promise<UserEmailVerification | undefined> {
@@ -61,23 +62,19 @@ export class AuthService {
       .getOne();
   }
 
+  // Calculate the time difference in MM:SS format
   private calculateTimeDifference(nextRequestTime: Date): string {
     const now = new Date();
     const diffBetweenTimes = nextRequestTime.getTime() - now.getTime();
-
-    // If the time difference is negative, return "00:00"
-    if (diffBetweenTimes < 0) {
-      return '00:00';
-    }
 
     const totalSeconds = Math.floor(diffBetweenTimes / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
 
-    // Format to MM:SS
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
+  // Create a new user email verification entry
   async createUserEmailVerification(
     user: User,
   ): Promise<UserEmailVerification> {
