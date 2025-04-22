@@ -1,5 +1,3 @@
-this updated compose:
-
 services:
   app:
     build: .
