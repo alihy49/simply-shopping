@@ -6,10 +6,12 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { IsString, IsBoolean, IsDate } from 'class-validator';
 
+@Index(['user', 'nextRequestTime', 'isUsed'])
 @Entity()
 export class UserEmailVerification {
   @PrimaryGeneratedColumn()
