@@ -12,7 +12,7 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async createUser(email: string): Promise<User> {
+  async create(email: string): Promise<User> {
     const user = this.userRepository.create({
       email,
     });
@@ -22,5 +22,18 @@ export class UserService {
 
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  async verify(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    user.isVerified = true;
+    await this.userRepository.save(user);
+
+    return user;
   }
 }

@@ -1,6 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { RegisterWithEmailDto } from '../dto/register-with-email.dto';
+import { VerifyEmailDto } from '../dto/verify-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -8,6 +9,13 @@ export class AuthController {
 
   @Post('register-email')
   async registerWithEmailRouter(@Body() { email }: RegisterWithEmailDto) {
-    return this.authService.registerWithEmail(email);
+    const emailVerificationUid =
+      await this.authService.registerWithEmail(email);
+    return { emailVerificationId: emailVerificationUid };
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body() { evId, pinCode }: VerifyEmailDto) {
+    return this.authService.verifyWithEmail(evId, pinCode);
   }
 }

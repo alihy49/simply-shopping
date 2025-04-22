@@ -5,6 +5,7 @@ import * as crypto from 'crypto';
 
 import { UserEmailVerification } from '../entities/user-email-verification.entity';
 import { User } from 'src/user/entities/user.entity';
+import { Exception } from 'src/common/exception';
 
 @Injectable()
 export class VerificationService {
@@ -13,7 +14,6 @@ export class VerificationService {
     private readonly userEmailVerificationRepository: Repository<UserEmailVerification>,
   ) {}
 
-  // Handle getting active email verification
   async getActiveUserEmailVerification(
     user: User,
   ): Promise<UserEmailVerification | undefined> {
@@ -26,7 +26,6 @@ export class VerificationService {
       .getOne();
   }
 
-  // Handle email verification creation
   async createUserEmailVerification(
     user: User,
   ): Promise<UserEmailVerification> {
@@ -47,7 +46,6 @@ export class VerificationService {
     return this.userEmailVerificationRepository.save(userEmailVerification);
   }
 
-  // Handle time difference for verification (MM:SS)
   calculateTimeDifference(nextRequestTime: Date): string {
     const now = new Date();
     const diffBetweenTimes = nextRequestTime.getTime() - now.getTime();
@@ -63,17 +61,30 @@ export class VerificationService {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
-  // TODO: Implement SMS verification creation logic here
-  async createUserSmsVerification(): Promise<any> {
-    // TODO: Implement the logic for creating SMS verification (send SMS, generate code, etc.)
-    return Promise.resolve('SMS verification logic will be implemented here');
-  }
+  async verifyUserEmailVerification(
+    emailVerificationUid: string,
+    pinCode: string,
+  ) {
+    const verification = await this.userEmailVerificationRepository.findOne({
+      where: { uid: emailVerificationUid },
+      relations: ['user'],
+    });
 
-  // TODO: Implement check for active SMS verification
-  async getActiveUserSmsVerification(): Promise<any> {
-    // TODO: Implement the logic to check if there is an active SMS verification for the user
-    return Promise.resolve(
-      'SMS verification status logic will be implemented here',
-    );
+    if (
+      !verification ||
+      verification.isUsed ||
+      verification.pinCode !== pinCode
+    ) {
+      throw Exception.BadRequest('Invalid evId or pinCode');
+    }
+
+    if (verification.expiresIn < new Date()) {
+      throw Exception.BadRequest('Verification code has expired');
+    }
+
+    verification.isUsed = true;
+    await this.userEmailVerificationRepository.save(verification);
+
+    return verification.user;
   }
 }
