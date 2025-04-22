@@ -23,6 +23,17 @@ services:
     networks:
       - simply-shopping-network
 
+  pgadmin:
+    image: public.ecr.aws/big-wave-tech/pgadmin4:7
+    container_name: simply-shopping-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - database
+    networks:
+      - simply-shopping-network
+
 volumes:
   database-data:
 
