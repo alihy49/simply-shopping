@@ -16,14 +16,14 @@ export class FactorService {
   ) {}
 
   async create(createFactorDto: CreateFactorDto): Promise<Factor> {
-    const { userId, total, date } = createFactorDto;
+    const { userId, total } = createFactorDto;
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new Error('User not found');
     }
 
-    const factor = this.factorRepository.create({ user, total, date });
+    const factor = this.factorRepository.create({ user, total });
     return await this.factorRepository.save(factor);
   }
 }

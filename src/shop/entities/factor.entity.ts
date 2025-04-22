@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
@@ -12,13 +14,20 @@ export class Factor {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  date: Date;
-
-  @Column({ type: 'decimal' })
-  total: number;
-
   @ManyToOne(() => User, (user) => user.factors)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+  })
+  total: number;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }

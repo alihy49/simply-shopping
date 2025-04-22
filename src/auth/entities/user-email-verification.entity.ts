@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { IsString, IsBoolean, IsDate } from 'class-validator';
@@ -17,23 +19,29 @@ export class UserEmailVerification {
   @JoinColumn()
   user: User;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 32, unique: true })
   @IsString()
   uid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 6 })
   @IsString()
   pinCode: string;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   @IsBoolean()
   isUsed: boolean;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   @IsDate()
   nextRequestTime: Date;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   @IsDate()
   expiresIn: Date;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }
