@@ -6,10 +6,12 @@ import { AuthController } from './controllers/auth.controller';
 import { UserEmailVerification } from './entities/user-email-verification.entity';
 import { UserModule } from 'src/user/user.module';
 import { VerificationService } from './services/verification.service';
+import { RefreshToken } from './entities/refresh-token.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEmailVerification]),
+    TypeOrmModule.forFeature([RefreshToken]),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'super-secret',
       signOptions: { expiresIn: '1d' },

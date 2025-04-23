@@ -6,16 +6,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import {
-  IsEmail,
-  IsNotEmpty,
-  MinLength,
-  IsEnum,
-  IsString,
-  IsOptional,
-  IsBoolean,
-} from 'class-validator';
-import { Factor } from 'src/shop/entities/factor.entity';
+
+import { Factor } from '../../shop/entities/factor.entity';
+import { RefreshToken } from '../../auth/entities/refresh-token.entity';
 
 export enum UserRole {
   CUSTOMER = 'customer',
@@ -28,35 +21,26 @@ export class User {
   id: number;
 
   @Column({ type: 'varchar', length: 225, nullable: false, unique: true })
-  @IsString()
-  @IsNotEmpty()
-  @IsEmail()
   email: string;
 
-  @Column({ type: 'varchar', length: 16, nullable: true })
-  @IsString()
-  @IsOptional()
+  @Column({ type: 'varchar', length: 16, nullable: true, name: 'phone_number' })
   phoneNumber?: string;
 
-  @Column({ type: 'boolean', nullable: true, default: false })
-  @IsOptional()
-  @IsBoolean()
+  @Column({
+    type: 'boolean',
+    nullable: true,
+    default: false,
+    name: 'is_verified',
+  })
   isVerified: boolean;
 
   @Column({ type: 'varchar', length: 225, nullable: true })
-  @IsString()
-  @IsOptional()
-  @MinLength(6)
   password: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  @IsString()
-  @IsOptional()
+  @Column({ type: 'varchar', length: 50, nullable: true, name: 'first_name' })
   firstName: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  @IsString()
-  @IsOptional()
+  @Column({ type: 'varchar', length: 50, nullable: true, name: 'last_name' })
   lastName: string;
 
   @Column({
@@ -65,16 +49,17 @@ export class User {
     enum: UserRole,
     default: UserRole.CUSTOMER,
   })
-  @IsEnum(UserRole)
-  @IsOptional()
   role: UserRole;
+
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshTokens: RefreshToken[];
 
   @OneToMany(() => Factor, (factor) => factor.user)
   factors: Factor[];
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 }
