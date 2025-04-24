@@ -2,7 +2,7 @@ import { IsString } from 'class-validator';
 
 export class VerifyEmailDto {
   @IsString()
-  evId: string;
+  emailVerificationId: string;
 
   @IsString()
   pinCode: string;

@@ -61,12 +61,9 @@ export class VerificationService {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
-  async verifyUserEmailVerification(
-    emailVerificationUid: string,
-    pinCode: string,
-  ) {
+  async verifyUserEmailVerification(uid: string, pinCode: string) {
     const verification = await this.userEmailVerificationRepository.findOne({
-      where: { uid: emailVerificationUid },
+      where: { uid },
       relations: ['user'],
     });
 

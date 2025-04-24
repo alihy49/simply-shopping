@@ -15,7 +15,7 @@ export class AuthController {
   }
 
   @Post('verify-email')
-  async verifyEmail(@Body() { evId, pinCode }: VerifyEmailDto) {
-    return this.authService.verifyWithEmail(evId, pinCode);
+  async verifyEmail(@Body() { emailVerificationId, pinCode }: VerifyEmailDto) {
+    return this.authService.verifyWithEmail(emailVerificationId, pinCode);
   }
 }
